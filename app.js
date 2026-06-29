@@ -52,6 +52,7 @@ const state = {
   requireWheelchair: false,
   requireChanging: false,
   debounceTimer: null,
+  searchedOrigin: null, // 使用者手動搜尋地點時設定，作為導航起點
 };
 
 const els = {
@@ -216,6 +217,7 @@ function locateUser() {
         lng: position.coords.longitude,
       };
       els.privacyNotice.hidden = true;
+      state.searchedOrigin = null; // 使用 GPS，導航改回從裝置位置出發
       setUserMarker(center);
       state.map.setView([center.lat, center.lng], 16);
       scheduleMapResize();
@@ -423,7 +425,9 @@ function renderCard(place) {
     place.wheelchair ? '<span class="badge">♿ 無障礙</span>' : "",
     place.changingTable ? '<span class="badge">親子尿布台</span>' : "",
   ].join("");
-  const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
+  const navUrl = state.searchedOrigin
+    ? `https://www.google.com/maps/dir/?api=1&origin=${state.searchedOrigin.lat},${state.searchedOrigin.lng}&destination=${place.lat},${place.lng}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
 
   return `
     <article class="result-card ${place.id === state.activePlaceId ? "active" : ""}" data-id="${place.id}">
@@ -499,6 +503,7 @@ async function searchPlace(keyword) {
       const data = await response.json();
       const result = parseSearchResult(data);
       if (!result) continue;
+      state.searchedOrigin = result; // 記錄手動搜尋地點作為導航起點
       state.map.setView([result.lat, result.lng], 16);
       scheduleMapResize();
       queryNearby(result);
