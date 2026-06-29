@@ -489,6 +489,7 @@ h2 {
 
   .map-panel {
     flex: 0 0 auto;
+    height: min(48vh, 430px);
     height: min(48dvh, 430px);
     min-height: 300px;
     max-height: 430px;
@@ -520,6 +521,7 @@ h2 {
   }
 
   .map-panel {
+    height: 42vh;
     height: 42dvh;
     min-height: 280px;
   }

@@ -133,6 +133,12 @@ function initMap() {
   // Leaflet 需要重新計算容器大小，否則圖磚會錯位或破碎。
   window.addEventListener("resize", scheduleMapResize);
   window.addEventListener("orientationchange", scheduleMapResize);
+
+  // ResizeObserver 能捕捉 window.resize 捕捉不到的容器尺寸變化，
+  // 例如手機網址列收合、鍵盤彈出等。
+  if (window.ResizeObserver) {
+    new ResizeObserver(scheduleMapResize).observe(document.getElementById("map"));
+  }
 }
 
 function bindEvents() {
@@ -580,6 +586,7 @@ function scheduleMapResize() {
     state.map.invalidateSize({ pan: false });
   });
   window.setTimeout(() => state.map.invalidateSize({ pan: false }), 250);
+  window.setTimeout(() => state.map.invalidateSize({ pan: false }), 800);
 }
 
 function escapeHtml(value) {
