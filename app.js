@@ -80,6 +80,7 @@ function init() {
   initMap();
   renderCategoryFilters();
   bindEvents();
+  scheduleMapResize();
   updateStatus("請先允許定位，或直接拖曳地圖後搜尋中心附近。");
 }
 
@@ -127,6 +128,11 @@ function initMap() {
       updateStatus("地圖已移動，可搜尋此中心附近。");
     }, 500);
   });
+
+  // 手機瀏覽器的網址列收合、旋轉螢幕或 CSS breakpoint 改變時，
+  // Leaflet 需要重新計算容器大小，否則圖磚會錯位或破碎。
+  window.addEventListener("resize", scheduleMapResize);
+  window.addEventListener("orientationchange", scheduleMapResize);
 }
 
 function bindEvents() {
@@ -206,6 +212,7 @@ function locateUser() {
       els.privacyNotice.hidden = true;
       setUserMarker(center);
       state.map.setView([center.lat, center.lng], 16);
+      scheduleMapResize();
       queryNearby(center);
     },
     () => {
@@ -239,6 +246,7 @@ function setUserMarker(center) {
 }
 
 function queryFromMapCenter() {
+  scheduleMapResize();
   const center = latLngToObject(state.map.getCenter());
   queryNearby(center);
 }
@@ -486,6 +494,7 @@ async function searchPlace(keyword) {
       const result = parseSearchResult(data);
       if (!result) continue;
       state.map.setView([result.lat, result.lng], 16);
+      scheduleMapResize();
       queryNearby(result);
       return;
     } catch (error) {
@@ -563,6 +572,14 @@ function latLngToObject(latLng) {
 
 function updateStatus(message) {
   els.statusText.textContent = message;
+}
+
+function scheduleMapResize() {
+  if (!state.map) return;
+  window.requestAnimationFrame(() => {
+    state.map.invalidateSize({ pan: false });
+  });
+  window.setTimeout(() => state.map.invalidateSize({ pan: false }), 250);
 }
 
 function escapeHtml(value) {
