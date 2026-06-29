@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="日本公共廁所即時地圖，使用 OpenStreetMap 與 Leaflet 查詢附近公共廁所、便利商店、車站、公園與百貨。"
+    />
+    <title>日本公共廁所即時地圖</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIINfQfqqV1dT7igW3N2nzj9B0GqFV6VxQ="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">日本・附近可用廁所</p>
+          <h1>公共廁所即時地圖</h1>
+        </div>
+        <button class="icon-button" id="relocateBtn" type="button" title="重新定位" aria-label="重新定位">
+          <span aria-hidden="true">⌖</span>
+        </button>
+      </header>
+
+      <main class="layout">
+        <section class="map-panel" aria-label="地圖">
+          <div id="map"></div>
+          <div class="map-status" id="statusText" role="status">準備定位…</div>
+          <button class="map-query-button" id="queryCenterBtn" type="button">搜尋此地圖中心附近</button>
+        </section>
+
+        <aside class="list-panel" aria-label="附近地點清單">
+          <section class="notice" id="privacyNotice">
+            <strong>需要你的位置</strong>
+            <p>我們會用目前位置查詢附近可自由使用的廁所。你的位置只在你的瀏覽器中計算，不會上傳到任何伺服器。</p>
+            <button class="primary-button" id="startLocateBtn" type="button">使用目前位置</button>
+            <button class="secondary-button" id="skipLocateBtn" type="button">先用地圖中心搜尋</button>
+          </section>
+
+          <form class="search-row" id="searchForm" role="search">
+            <label class="sr-only" for="placeSearch">搜尋日本地名</label>
+            <input id="placeSearch" type="search" placeholder="搜尋日本地名或地址" autocomplete="off" />
+            <button type="submit">搜尋</button>
+          </form>
+
+          <section class="controls" aria-label="篩選與半徑">
+            <div class="control-group">
+              <p class="control-title">查詢半徑</p>
+              <div class="segmented" id="radiusOptions">
+                <button type="button" data-radius="500">500m</button>
+                <button type="button" data-radius="1000">1km</button>
+                <button type="button" data-radius="1500" class="active">1.5km</button>
+                <button type="button" data-radius="3000">3km</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <p class="control-title">分類</p>
+              <div class="chip-grid" id="categoryFilters"></div>
+            </div>
+
+            <div class="control-group compact-filters">
+              <label><input type="checkbox" id="wheelchairFilter" /> 無障礙廁所</label>
+              <label><input type="checkbox" id="changingFilter" /> 親子尿布台</label>
+            </div>
+          </section>
+
+          <section class="results-head">
+            <div>
+              <p class="eyebrow">查詢結果</p>
+              <h2 id="resultSummary">尚未查詢</h2>
+            </div>
+            <button class="secondary-button small" id="refreshBtn" type="button">重新查詢</button>
+          </section>
+
+          <section id="emptyState" class="empty-state" hidden>
+            <p>附近 1.5 公里內查無資料，要擴大到 3 公里嗎？</p>
+            <button class="primary-button" id="expandRadiusBtn" type="button">擴大到 3 公里</button>
+          </section>
+
+          <div class="results-list" id="resultsList" aria-live="polite"></div>
+        </aside>
+      </main>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="app.js"></script>
+  </body>
+</html>
